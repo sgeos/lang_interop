@@ -1,11 +1,14 @@
-.PHONEY: all force run clean
+.PHONEY: all force list_targets run clean
 
 CFLAGS=-Wall
 CXXFLAGS=-Wall
 ASFLAGS=
 RUSTFLAGS=-L.
 
-TARGETS=c2c c2cxx c2arm64asm c2x64asm c2rust cxx2c cxx2cxx cxx2arm64asm cxx2x64asm cxx2rust arm64asm2c arm64asm2cxx arm64asm2arm64asm arm64asm2rust x64asm2c x64asm2cxx x64asm2x64asm x64asm2rust rust2c rust2cxx rust2arm64asm rust2x64asm rust2rust
+ASSEMBLER_LANGUAGE=x64asm # aarch32asm aarch64asm
+COMPILED_LANGUAGES=c cxx rust
+TARGET_LANGUAGES=$(ASSEMBLER_LANGUAGE) $(COMPILED_LANGUAGES)
+TARGETS=$(foreach FROM,$(TARGET_LANGUAGES),$(foreach TO,$(TARGET_LANGUAGES),$(FROM)2$(TO)))
 
 all: $(TARGETS)
 
@@ -17,7 +20,10 @@ c2c: main_c.o libhello_c.a
 c2cxx: main_c.o libhello_cxx.a
 	$(CC) $(CFLAGS) $^ -o $@
 
-c2arm64asm: main_c.o libhello_arm64asm.a
+c2aarch32asm: main_c.o libhello_aarch32asm.a
+	$(CC) $(CFLAGS) $^ -o $@
+
+c2aarch64asm: main_c.o libhello_aarch64asm.a
 	$(CC) $(CFLAGS) $^ -o $@
 
 c2x64asm: main_c.o libhello_x64asm.a
@@ -32,7 +38,10 @@ cxx2c: main_cxx.o libhello_c.a
 cxx2cxx: main_cxx.o libhello_cxx.a
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-cxx2arm64asm: main_cxx.o libhello_arm64asm.a
+cxx2aarch32asm: main_cxx.o libhello_aarch32asm.a
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+cxx2aarch64asm: main_cxx.o libhello_aarch64asm.a
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 cxx2x64asm: main_cxx.o libhello_x64asm.a
@@ -41,17 +50,29 @@ cxx2x64asm: main_cxx.o libhello_x64asm.a
 cxx2rust: main_cxx.o libhello_rust.a
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-arm64asm2c: main_arm64asm.o libhello_c.a
-	$(CC) $(CFLAGS) $^ -o $@
+aarch32asm2c: main_aarch32asm.o libhello_c.a
+	$(CC) -m32 $(CFLAGS) $^ -o $@
 
-arm64asm2cxx: main_arm64asm.o libhello_cxx.a
-	$(CC) $(CFLAGS) $^ -o $@
+aarch32asm2cxx: main_aarch32asm.o libhello_cxx.a
+	$(CC) -m32 $(CFLAGS) $^ -o $@
 
-arm64asm2arm64asm: main_arm64asm.o libhello_arm64asm.a
-	$(CC) $(CFLAGS) $^ -o $@
+aarch32asm2aarch32asm: main_aarch32asm.o libhello_aarch32asm.a
+	$(CC) -m32 $(CFLAGS) $^ -o $@
 
-arm64asm2rust: main_arm64asm.o libhello_rust.a
-	$(CC) $(CFLAGS) $^ -o $@
+aarch32asm2rust: main_aarch32asm.o libhello_rust.a
+	$(CC) -m32 $(CFLAGS) $^ -o $@
+
+aarch64asm2c: main_aarch64asm.o libhello_c.a
+	$(CC) -m64 $(CFLAGS) $^ -o $@
+
+aarch64asm2cxx: main_aarch64asm.o libhello_cxx.a
+	$(CC) -m64 $(CFLAGS) $^ -o $@
+
+aarch64asm2aarch64asm: main_aarch64asm.o libhello_aarch64asm.a
+	$(CC) -m64 $(CFLAGS) $^ -o $@
+
+aarch64asm2rust: main_aarch64asm.o libhello_rust.a
+	$(CC) -m64 $(CFLAGS) $^ -o $@
 
 x64asm2c: main_x64asm.o libhello_c.a
 	$(CC) $(CFLAGS) $^ -o $@
@@ -73,8 +94,12 @@ rust2cxx: main.rs libhello_cxx.a
 	cp libhello_cxx.a libhello.a
 	rustc $(RUSTFLAGS) $< -o $@
 
-rust2arm64asm: main.rs libhello_arm64asm.a
-	cp libhello_arm64asm.a libhello.a
+rust2aarch32asm: main.rs libhello_aarch32asm.a
+	cp libhello_aarch32.a libhello.a
+	rustc $(RUSTFLAGS) $< -o $@
+
+rust2aarch64asm: main.rs libhello_aarch64asm.a
+	cp libhello_aarch64.a libhello.a
 	rustc $(RUSTFLAGS) $< -o $@
 
 rust2x64asm: main.rs libhello_x64asm.a
@@ -101,11 +126,17 @@ lib%_rust.a: %.rs
 %_cxx.o: %.cxx
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-%_arm64asm.o: %.arm_64.s
-	$(AS) $(ASFLAGS) $< -o $@
+%_aarch32asm.o: %.aarch32.s
+	$(CC) -m32 $(CFLAGS) $< -c -o $@
+
+%_aarch64asm.o: %.aarch64.s
+	$(CC) -m64 $(CFLAGS) $< -c -o $@
 
 %_x64asm.o: %.x86_64.s
 	$(AS) $(ASFLAGS) $< -o $@
+
+list_targets:
+	echo $(TARGETS)
 
 run: $(TARGETS)
 	for cmd in $(TARGETS); do ./$${cmd}; done
