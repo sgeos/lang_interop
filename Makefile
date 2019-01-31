@@ -3,7 +3,7 @@
 CFLAGS=-Wall
 ASFLAGS=
 
-TARGETS=c2c c2rust rust2c
+TARGETS=c2c c2rust rust2c rust2rust
 
 all: $(TARGETS)
 
@@ -17,6 +17,14 @@ c2rust: main.o libhello_rust.a
 
 rust2c: main.rs libhello_c.a
 	cp libhello_c.a libhello.a
+	rustc -L. $< -o $@
+
+rust2rust: main.rs libhello_c.a
+	mkdir _$@
+	cd _$@ && ar -x ../libhello_rust.a
+	rm _$@/libhello_rust.4kjqp1i30etsact8.rcgu.o
+	libtool  -static _$@/*.o -o libhello.a
+	rm -rf _$@
 	rustc -L. $< -o $@
 
 lib%_c.a: %.o
