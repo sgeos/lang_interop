@@ -1,9 +1,11 @@
-.PHONEY: all force clean
+.PHONEY: all force run clean
 
 CFLAGS=-Wall
+CXXFLAGS=-Wall
 ASFLAGS=
+RUSTFLAGS=-L.
 
-TARGETS=c2c c2x64asm c2rust x64asm2c x64asm2x64asm x64asm2rust rust2c rust2x64asm rust2rust
+TARGETS=c2c c2cxx c2x64asm c2rust cxx2c cxx2cxx cxx2x64asm cxx2rust x64asm2c x64asm2cxx x64asm2x64asm x64asm2rust rust2c rust2cxx rust2x64asm rust2rust
 
 all: $(TARGETS)
 
@@ -12,13 +14,31 @@ force: clean all
 c2c: main_c.o libhello_c.a
 	$(CC) $(CFLAGS) $^ -o $@
 
+c2cxx: main_c.o libhello_cxx.a
+	$(CC) $(CFLAGS) $^ -o $@
+
 c2x64asm: main_c.o libhello_x64asm.a
 	$(CC) $(CFLAGS) $^ -o $@
 
 c2rust: main_c.o libhello_rust.a
 	$(CC) $(CFLAGS) $^ -o $@
 
+cxx2c: main_cxx.o libhello_c.a
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+cxx2cxx: main_cxx.o libhello_cxx.a
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+cxx2x64asm: main_cxx.o libhello_x64asm.a
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+cxx2rust: main_cxx.o libhello_rust.a
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
 x64asm2c: main_x64asm.o libhello_c.a
+	$(CC) $(CFLAGS) $^ -o $@
+
+x64asm2cxx: main_x64asm.o libhello_cxx.a
 	$(CC) $(CFLAGS) $^ -o $@
 
 x64asm2x64asm: main_x64asm.o libhello_x64asm.a
@@ -29,11 +49,15 @@ x64asm2rust: main_x64asm.o libhello_rust.a
 
 rust2c: main.rs libhello_c.a
 	cp libhello_c.a libhello.a
-	rustc -L. $< -o $@
+	rustc $(RUSTFLAGS) $< -o $@
+
+rust2cxx: main.rs libhello_cxx.a
+	cp libhello_cxx.a libhello.a
+	rustc $(RUSTFLAGS) $< -o $@
 
 rust2x64asm: main.rs libhello_x64asm.a
 	cp libhello_x64asm.a libhello.a
-	rustc -L. $< -o $@
+	rustc $(RUSTFLAGS) $< -o $@
 
 rust2rust: main.rs libhello_c.a
 	mkdir _$@
@@ -41,7 +65,7 @@ rust2rust: main.rs libhello_c.a
 	rm _$@/libhello_rust.4kjqp1i30etsact8.rcgu.o
 	libtool  -static _$@/*.o -o libhello.a
 	rm -rf _$@
-	rustc -L. $< -o $@
+	rustc $(RUSTFLAGS) $< -o $@
 
 lib%.a: %.o
 	ar rcs $@ $<
@@ -52,8 +76,14 @@ lib%_rust.a: %.rs
 %_c.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%_x64asm.o: %.s
+%_cxx.o: %.cxx
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+%_x64asm.o: %.x86_64.s
 	$(AS) $(ASFLAGS) $< -o $@
+
+run: $(TARGETS)
+	for cmd in $(TARGETS); do ./$${cmd}; done
 
 clean:
 	rm -rf *.o *.a $(TARGETS)
