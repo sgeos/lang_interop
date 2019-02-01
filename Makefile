@@ -5,7 +5,7 @@ CXXFLAGS=-Wall
 ASFLAGS=
 RUSTFLAGS=-L.
 
-TARGETS=c2c c2cxx c2x64asm c2rust cxx2c cxx2cxx cxx2x64asm cxx2rust x64asm2c x64asm2cxx x64asm2x64asm x64asm2rust rust2c rust2cxx rust2x64asm rust2rust
+TARGETS=c2c c2cxx c2arm64asm c2x64asm c2rust cxx2c cxx2cxx cxx2arm64asm cxx2x64asm cxx2rust arm64asm2c arm64asm2cxx arm64asm2arm64asm arm64asm2rust x64asm2c x64asm2cxx x64asm2x64asm x64asm2rust rust2c rust2cxx rust2arm64asm rust2x64asm rust2rust
 
 all: $(TARGETS)
 
@@ -15,6 +15,9 @@ c2c: main_c.o libhello_c.a
 	$(CC) $(CFLAGS) $^ -o $@
 
 c2cxx: main_c.o libhello_cxx.a
+	$(CC) $(CFLAGS) $^ -o $@
+
+c2arm64asm: main_c.o libhello_arm64asm.a
 	$(CC) $(CFLAGS) $^ -o $@
 
 c2x64asm: main_c.o libhello_x64asm.a
@@ -29,11 +32,26 @@ cxx2c: main_cxx.o libhello_c.a
 cxx2cxx: main_cxx.o libhello_cxx.a
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
+cxx2arm64asm: main_cxx.o libhello_arm64asm.a
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
 cxx2x64asm: main_cxx.o libhello_x64asm.a
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 cxx2rust: main_cxx.o libhello_rust.a
 	$(CXX) $(CXXFLAGS) $^ -o $@
+
+arm64asm2c: main_arm64asm.o libhello_c.a
+	$(CC) $(CFLAGS) $^ -o $@
+
+arm64asm2cxx: main_arm64asm.o libhello_cxx.a
+	$(CC) $(CFLAGS) $^ -o $@
+
+arm64asm2arm64asm: main_arm64asm.o libhello_arm64asm.a
+	$(CC) $(CFLAGS) $^ -o $@
+
+arm64asm2rust: main_arm64asm.o libhello_rust.a
+	$(CC) $(CFLAGS) $^ -o $@
 
 x64asm2c: main_x64asm.o libhello_c.a
 	$(CC) $(CFLAGS) $^ -o $@
@@ -53,6 +71,10 @@ rust2c: main.rs libhello_c.a
 
 rust2cxx: main.rs libhello_cxx.a
 	cp libhello_cxx.a libhello.a
+	rustc $(RUSTFLAGS) $< -o $@
+
+rust2arm64asm: main.rs libhello_arm64asm.a
+	cp libhello_arm64asm.a libhello.a
 	rustc $(RUSTFLAGS) $< -o $@
 
 rust2x64asm: main.rs libhello_x64asm.a
@@ -78,6 +100,9 @@ lib%_rust.a: %.rs
 
 %_cxx.o: %.cxx
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+%_arm64asm.o: %.arm_64.s
+	$(AS) $(ASFLAGS) $< -o $@
 
 %_x64asm.o: %.x86_64.s
 	$(AS) $(ASFLAGS) $< -o $@
