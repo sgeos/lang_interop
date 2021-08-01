@@ -2,6 +2,10 @@
 
 A repository for demonstrating language interoperation via the C ABI.
 
+Getting the exact same Rust code to link with Rust and other
+languages is not easy to do in the general case, so this example has
+some issues.
+
 ## References
 
 - [ARM (AArch32) Assembler in Raspberry Pi Tutorial][aarch32-tutorial]

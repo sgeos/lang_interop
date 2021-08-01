@@ -12,46 +12,68 @@ Cargo.lock
 # Files with examples
 Makefile
 
-# core files
+# core files.
 *.core
 
 # Built files.
-*.a
 *.o
+*.a
+*.rlib
 
-aarch32asm2aarch32asm
-aarch32asm2c
-aarch32asm2cxx
-aarch32asm2rust
+# Executable targets.
+x64asm2x64asm
+x64asm2armv7asm
+x64asm2aarch64asm
+x64asm2c
+x64asm2cxx
+x64asm2std_rust
+x64asm2no_std_rust
 
+armv7asm2x64asm
+armv7asm2armv7asm
+armv7asm2aarch64asm
+armv7asm2c
+armv7asm2cxx
+armv7asm2std_rust
+armv7asm2no_std_rust
+
+aarch64asm2x64asm
+aarch64asm2armv7asm
 aarch64asm2aarch64asm
 aarch64asm2c
 aarch64asm2cxx
-aarch64asm2rust
+aarch64asm2std_rust
+aarch64asm2no_std_rust
 
-x64asm2x64asm
-x64asm2c
-x64asm2cxx
-x64asm2rust
-
-c2aarch32asm
-c2aarch64asm
 c2x64asm
+c2armv7asm
+c2aarch64asm
 c2c
 c2cxx
-c2rust
+c2std_rust
+c2no_std_rust
 
-cxx2aarch32asm
-cxx2aarch64asm
 cxx2x64asm
+cxx2armv7asm
+cxx2aarch64asm
 cxx2c
 cxx2cxx
-cxx2rust
+cxx2std_rust
+cxx2no_std_rust
 
-rust2aarch32asm
-rust2aarch64asm
-rust2x64asm
-rust2c
-rust2cxx
-rust2rust
+std_rust2x64asm
+std_rust2armv7asm
+std_rust2aarch64asm
+std_rust2c
+std_rust2cxx
+std_rust2std_rust
+std_rust2no_std_rust
+
+no_std_rust2x64asm
+no_std_rust2armv7asm
+no_std_rust2aarch64asm
+no_std_rust2c
+no_std_rust2cxx
+no_std_rust2std_rust
+no_std_rust2no_std_rust
 
