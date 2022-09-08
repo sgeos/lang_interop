@@ -21,6 +21,12 @@ Makefile
 *.rlib
 
 # Executable targets.
+appleasm2appleasm
+appleasm2c
+appleasm2cxx
+appleasm2no_std_rust
+appleasm2std_rust
+
 x64asm2x64asm
 x64asm2armv7asm
 x64asm2aarch64asm
@@ -45,6 +51,7 @@ aarch64asm2cxx
 aarch64asm2std_rust
 aarch64asm2no_std_rust
 
+c2appleasm
 c2x64asm
 c2armv7asm
 c2aarch64asm
@@ -53,6 +60,7 @@ c2cxx
 c2std_rust
 c2no_std_rust
 
+cxx2appleasm
 cxx2x64asm
 cxx2armv7asm
 cxx2aarch64asm
@@ -61,6 +69,7 @@ cxx2cxx
 cxx2std_rust
 cxx2no_std_rust
 
+std_rust2appleasm
 std_rust2x64asm
 std_rust2armv7asm
 std_rust2aarch64asm
@@ -69,6 +78,7 @@ std_rust2cxx
 std_rust2std_rust
 std_rust2no_std_rust
 
+no_std_rust2appleasm
 no_std_rust2x64asm
 no_std_rust2armv7asm
 no_std_rust2aarch64asm
