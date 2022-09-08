@@ -8,7 +8,8 @@ _main:
         mov     x29, sp
 
         // hello(main.from_environment)
-        adr     x0, main.from_environment
+        adrp    x0, main.from_environment@PAGE
+        add     x0, x0, main.from_environment@PAGEOFF
         bl      _hello
 
         // return(0)
@@ -16,6 +17,8 @@ _main:
         mov     w0, #0
         ret
 
+.data
+        .balign ALIGNMENT
 main.from_environment:
         .asciz "Apple Aarch64 ASM"
         .balign ALIGNMENT

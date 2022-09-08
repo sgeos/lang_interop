@@ -4,7 +4,7 @@
         .balign ALIGNMENT
         .global hello
 hello:
-        // pusk FP and LR onto stack and update frame
+        // push FP and LR onto stack and update frame
         stp     x29, x30, [sp, #-16]!
         mov     x29, sp
 
